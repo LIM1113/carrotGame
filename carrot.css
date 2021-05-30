@@ -11,6 +11,9 @@ body{
   width: 100%;
 }
 
+audio{
+  display: none;
+}
 
 .backGroundImg{
   position: relative;

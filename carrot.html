@@ -7,6 +7,18 @@
     <script src="carrot.js" charset="utf-8" defer></script>
   </head>
   <body>
+    <audio id ="audioBg" controls preload="auto" autoplay>
+      <source src="carrot/sound/bg.mp3" type="audio/mpeg">
+    </audio>
+    <audio id ="audioCarrot" controls preload="auto">
+      <source src="carrot/sound/carrot_pull.mp3" type="audio/mpeg">
+    </audio>
+    <audio id ="audioWin" controls preload="auto">
+      <source src="carrot/sound/game_win.mp3" type="audio/mpeg">
+    </audio>
+    <audio id ="audioLose" controls preload="auto">
+      <source src="carrot/sound/bug_pull.mp3" type="audio/mpeg">
+    </audio>
     <div class="backGroundImg">
       <div class="playControl">
         <button class="startBtn" type="button" name="playBtn">START</button>
