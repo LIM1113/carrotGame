@@ -1,13 +1,11 @@
+'use strict'
+
 const startBtn = document.querySelector('.startBtn');
 const timeBox = document.querySelector('.timeBox');
 const gamePoint = document.querySelector('.Point');
 const modalBox = document.querySelector('.modalBox');
 const playGround = document.querySelector('.playGround');
 const itemImg = document.querySelectorAll('.itemImg');
-const audioBg = document.querySelector('#audioBg')
-const audioCarrot = document.querySelector('#audioCarrot')
-const audioWin = document.querySelector('#audioWin')
-const audioLose = document.querySelector('#audioLose')
 
 let time = 10;
 let point = 10;
@@ -18,40 +16,14 @@ const startPoint = "10"
 const IntervalNUM = '1000'
 let playing = false;
 const SHOWINGModal = 'showingModal';
-const SHOWINGImg = 'showingImg'
+const SHOWINGImg = 'showingImg';
+let timeInterval = undefined;
 
 /*오디오 설정*/
-function loadAudio(){
-  audioBg.load();
-  audioBg.volume = 0.2;
-  if(playing){
-  audioCarrot.autoplay = true;
-  } else if (!playing){
-    audioBg.pause();
-  }
-}
-
-function audioCarrotBg(e){
-  if(playing && e.target.classList.contains('carrotimg')){
-  audioCarrot.autoplay = true;
-  audioCarrot.load();
-  audioCarrot.volume = 0.5;
-  }
-}
-
-function audioWinBg(){
-  audioWin.autoplay = true;
-  audioWin.load();
-  audioWin.volume = 0.5;
-}
-
-function audioLoseBg(e){
-  if(playing && e.target.classList.contains('bugimg')){
-    audioLose.load();
-    audioLose.autoplay = true;
-    audioLose.volume = 0.5;
-  }
-}
+const carrotSound = new Audio("carrot/sound/carrot_pull.mp3");
+const winSound = new Audio("carrot/sound/game_win.mp3");
+const loseSound = new Audio("carrot/sound/bug_pull.mp3");
+const bgSound = new Audio("carrot/sound/bg.mp3");
 
 /*재시작 모달*/
 function reStartModal(){
@@ -62,6 +34,7 @@ function reStartModal(){
       <button class="reStart" type="button" name="button">try!</button>
     </div>
     `
+    playSound(loseSound);
   } else if(point === 0){
     modalBox.innerHTML =`
     <div class="restartBox">
@@ -69,7 +42,7 @@ function reStartModal(){
       <button class="reStart" type="button" name="button">again!</button>
     </div>
     `
-    audioWinBg();
+    playSound(winSound);
     }
   modalBox.classList.add(SHOWINGModal);
 }
@@ -77,7 +50,7 @@ function reStartModal(){
 /*게임 stop*/
 function stopGame(){
   playing = false;
-  loadAudio();
+  pauseSound(bgSound);
   clearInterval(timeInterval);
   startBtn.disabled = true;
   startBtn.textContent = "END";
@@ -88,7 +61,7 @@ function stopGame(){
 function timeCount(){
   startBtn.textContent = "STOP";
   startBtn.disabled = false;
-  if(time <= timeset){
+  if(time <= timeset && time >= 1){
     playing = true;
     time--;
     timeBox.innerText = `00:${time >= 10 ? `${time}` : `0${time}`}`
@@ -119,6 +92,7 @@ function removeCarrot(e){
   if(playing && e.target.classList.contains('carrotimg')){
       e.target.style.visibility = "hidden"
       point--;
+      playSound(carrotSound)
       gamePoint.textContent = `${point}`;
       if(point <= 0){
         stopGame()
@@ -126,9 +100,19 @@ function removeCarrot(e){
     }
 }
 
+function playSound(sound){
+  sound.currentTime = 0;
+  sound.play();
+}
+
+function pauseSound(sound){
+  sound.pause();
+}
+
 /*버그 클릭 시 게임 stop*/
 function bugClick(e){
   if(playing && e.target.classList.contains('bugimg')){
+    playSound(loseSound);
     stopGame();
   }
 }
@@ -139,7 +123,7 @@ function playingStart(){
     return;
   }
   playing = true;
-  loadAudio();
+  playSound(bgSound);
   time = timeset;
   point = ponitset;
   timeBox.innerText = `00:${time >= 10 ? `${time}` : `0${time}`}`;
@@ -154,13 +138,13 @@ startBtn.addEventListener('click',() => {
   playingStart();
 });
 playGround.addEventListener('click',(e) => {
-  audioCarrotBg(e);
-  audioLoseBg(e);
   removeCarrot(e);
   bugClick(e);
 });
-modalBox.addEventListener('click',(e) =>
-  {e.target.tagName = 'BUTTON' && playingStart();
+modalBox.addEventListener('click',(e) =>{
+    if(e.target.tagName === 'BUTTON'){
+    playingStart();
+    }
   }
 )
 
